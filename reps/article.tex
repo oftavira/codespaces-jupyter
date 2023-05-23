@@ -26,7 +26,7 @@
   \begin{@twocolumnfalse}
     \maketitle
     \begin{abstract}
-    In the present document we explore the characterization by means of Raman spectroscopy of a quartz matrix with embeded silicon nano crystals (Si-NC) A total of 20 Raman spectrums where taken along the x axis. The spectrums show a change in the shape of the LO and TO transitions due to a change in the crystal size. The analysis of the Raman Spectra where made using a python script available online to further discussion. The algorithm first takes an interval defined by the user k1 and k2 to work with it, denoise the signal, performs a base line calculation, and fits a multi peak signal which is the sum of three gaussian curves, but the algorithm can be extended to n gaussians. This information is collected in a plot of the x position and the position of the peaks related to the transitions and also the sigma (FWHM) related to the gaussian profiles.
+    In the present document we explore the characterization by means of Raman spectroscopy of a quartz matrix with embeded silicon nano crystals (Si-NC) A total of 20 Raman spectrums (RS) where taken along the widest axis of the sample. The RS  shown a change in shape of the LO and TO transitions due to a change in the crystal size (according to the literature and the observations discussed in this document). The analysis of the RS where made using a python script available online to later implementations. Using the  algorithm a multi peak signal was fited to the observations.
     \end{abstract}
     \vspace{1cm}
   \end{@twocolumnfalse}
@@ -34,11 +34,11 @@
 
 \section{Introduction}
 
-Silicon is an indirect band gap semiconductor $ (~1.1 \quad eV) $. Silicon has a high refractive index and low light absorption in the visible spectrum. It is transparent to infrared radiation, which makes it useful in optics and solar cell technologies. Crystalline silicon has a diamond-like crystal structure, known as a diamond cubic structure, the lattice constant is approximately 0.5431 nm.
+Silicon is an indirect band gap semiconductor $ (~1.1 \quad eV) $ with a high refractive index and low light absorption in the visible spectrum. It is transparent to infrared radiation, which makes it useful in optics and solar cell technologies. Crystalline silicon has a diamond-like crystal structure, known as a diamond cubic structure, the lattice constant is approximately 0.5431 nm.
 
 Silicon nanocrystals, also known as silicon quantum dots, possess unique properties at the nanoscale that make them useful in a variety of applications like: optoelectronics, where silicon nanocrystals can emit light in the visible and near-infrared range due to their quantum confinement effect; bioimaging and bioengineering, their small size, chemical stability, and tunable emission wavelengths make them ideal for labeling and tracking biological entities.
 
-It is possible to identify the silicon crystal structure analyzing its Raman spectrum, the conservation of phonon momentum q in crystalline silicon leaves as Raman active mode only the zone center $(q=0) $ optical phonon at, which produces a single peak of high intensity. In the other hand, amorphous silicon exhibits a q-selection rule relaxation due to the loss in long range order, which produces broadening on the silicon main peak and shifting toward lower wave numbers.
+It is possible to identify the silicon crystal structure analyzing its Raman spectrum, the conservation of phonon momentum q in crystalline silicon leaves as Raman active mode only the zone center $(q=0) $ optical phonon at, which produces a single peak of high intensity. In the other hand, amorphous silicon exhibits a q-selection rule relaxation due to the loss in long range order, which produces broadening on the silicon main peak and shifting towards lower wave numbers.
 
 \begin{figure}
   \centering
@@ -50,14 +50,8 @@ To create silicon nanocrystals using sputtering, a silicon target is typically b
 
 
 \section{Experimental Details}
-The sample in which the analysis was carried on is a quartz matrix with embeded silicon nanocrystals processed by Sputtering RF, with the density of the crystals varying along the x axis. A High Resolution Raman Spectrometer was used in this experiment (LabRam HR600) with an excitation wavelenght
-of 633nm, Acquisition time of 10 seconds, 2 accumulations, wavenumber between (100,1000) and the Hole at 75\%. The spectrums where taken with a separation in the x axis of 140$\mu m$
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[height=8cm, width=7cm]{all_n.png}
-  \captionof{figure}{Raman spectrums for the sample taken at different x positions.} % Add captn 2 the f
-\end{figure}
+The sample in which the analysis was carried on is a quartz matrix with embeded silicon nanocrystals processed by Sputtering RF, with the density of the crystals varying along the sample. A High Resolution Raman Spectrometer was used in this experiment (LabRam HR600) with an excitation wavelenght
+of 633nm, Acquisition time of 10 seconds, 2 accumulations, wavenumber (in $cm^{-1}$ ) between (100,1000) and the Hole at 75\%. The spectrums where taken with a separation in the x axis of 140$\mu m$
 
 \begin{figure}[h]
   \centering
@@ -65,7 +59,15 @@ of 633nm, Acquisition time of 10 seconds, 2 accumulations, wavenumber between (1
   \captionof{figure}{Manipulation of the Rama Spectrometer to focus the excitation source on the surface of the sample} % Add captn 2 the f
 \end{figure}
 
-As 'Figure 2' shows, the signals present a baseline that is a constant emission present in all the wavenumbers, to start the analysis we pick a range of wavenumber between 350 cm$^{-1}$ and 600 cm$^{-1}$
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=8cm, width=7cm]{all_n.png}
+  \captionof{figure}{Raman spectrums for the sample taken at different x positions.} % Add captn 2 the f
+\end{figure}
+
+
+The RS are shown in Figure 3. All the signals present a baseline that is aparentally a linearly increasing emission in all the wavenumbers. We observe an increase of the slope in the RS as the measurements are made in different points along the sample. To start the analysis we pick a range of wavenumber between 350 cm$^{-1}$ and 600 cm$^{-1}$ this is because we can expect the region of interest between the si transition at 520 $cm^{-1}]$ and the region in which the transitions start to occur in the RS (400 $cm^{-1}$). Then we can substract the baseline as shown in Figure 4.
 
 \begin{figure}[h]
   \centering
@@ -73,46 +75,104 @@ As 'Figure 2' shows, the signals present a baseline that is a constant emission 
   \captionof{figure}{Raman Spectrum before and after doing the base line correction, in the software we fit a polinomial of degree 3 but it can be changed.} % Add captn 2 the f
 \end{figure}
 
+The calculation for the baseline is made using a polinomial fit and it can be tweaked according to specific cases:
+
+
+\lstset{caption={Example code to crop a region and calculate baseline}}
+\begin{lstlisting}[basicstyle=\fontsize{5}{4}\selectfont\ttfamily]
+# Code to crop a region of interest
+# and calculate a baseline
+
+import numpy as np
+
+# Accessing to the x and y points of the RS
+spectrum = RamanSpectrum('medicion_silicio.txt')
+x,y = spectrum.x, spectrum.y
+
+def crop(upper,lower,X,Y):
+    x_c = []
+    y_c = []
+    for a,b in zip(X,Y):
+        if lower < a < upper:
+            x_c.append(a)
+            y_c.append(b)
+    # We return the cropped range
+    return x_c, y_c;
+
+# We store the cropped values inside
+# new arrays x_n and y_n
+
+x_n, y_n = crop(600,300,x,y)
+
+# X and Y are arrays that store the
+# coordinates of the RS, in this
+# function we calculate a baseline
+# for the pair of x,y, which x satisfies
+# (x < x_1),( x_2 < x) with ( x_1 < x_2).
+
+def fit_baseline(x_1,x_2,X,Y, ord):
+    x_f =[]
+    y_f =[]
+    for a,b in zip(X,Y):
+        if (x<x_1) and (x_2<x):
+            x_f.append(a)
+            y_f.append(b)
+    baseline = np.polyfit(x_f,y_f,ord)
+    return baseline;
+
+\end{lstlisting}
+
 After this we can start to fit the signal to a sum of three gaussian curves, this are defined by the equation 1:
 
 \begin{equation}
 f(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{(x - \mu)^2}{2\sigma^2}}
 \end{equation}
 
-In the last equation the factor that is multipliyng the exponential is the amplitute of the gaussian and  $\mu$ is the value at which the gaussian is centered, if we define consider that our signal is generated by the sum of three gaussian curves and the amplitute of each one is $A_{n}$ with a center $\mu_{n}$ the analytical function to fit writes as follows:
+In the last equation the factor that is multipliyng the exponential is the amplitute of the gaussian and  $\mu$ is the value at which the gaussian is centered, if we consider that our signal is generated by the sum of three gaussian curves and the amplitute of each one is $A_{n}$ with a center $\mu_{n}$ the analytical function to fit writes as follows:
 
 \begin{equation}
 f(x) = \sum_{n = 1}^{3} A_{n} e^{-\frac{(x - \mu_{n})^2}{2\sigma^2}}
 \end{equation}
 
-With a python package we can define the function to be optimized, and a fitting function can be defined setting a number of peaks to adjust (in our case 3 peaks) by least squares adjustment.
+With a python package we can define the function to be optimized, and a fitting function can be defined setting a number of peaks to adjust (in our case 3 peaks) by least squares.
 
-\lstset{caption={Insert code directly in your document}}
+\lstset{caption={Multipeak fitting of three gaussian curves}}
 \begin{lstlisting}[basicstyle=\fontsize{5}{4}\selectfont\ttfamily]
-def gaussian(self, x, amplitude, center, sigma):
+
+# Importing the optimization function
+
+from scipy.optimize import curve_fit
+import numpy as np
+
+# Define the gaussian generator
+
+def gaussian( x, amplitude, center, sigma):
     return amplitude * np.exp(-(x - center)**2 / (2 * sigma**2))
 
-def multi_peak_fit(self, x, *params):
+# The multi peak function
+
+def multi_peak_fit( x, *params):
     num_peaks = len(params) // 3
     y_fit = np.zeros_like(x)
 
-for i in range(num_peaks):
-%     amplitude, center, sigma =  params[i*3 : (i+1)*3]
-    y_fit += gaussian(x, amplitude, center, sigma)
-return y_fit
+    for i in range(num_peaks):
+        amplitude, center, sigma = params[i*3 : (i+1)*3]
+        y_fit += gaussian(x, amplitude, center, sigma)
+    return y_fit;
 
-initial_guess = [yspec3, c3, s3, yspec2, c2, s2, yspec, c1, s1]
-popt, pcov = curve_fit(self.multi_peak_fit, x, y, p0=initial_guess)
+# Creating the initial parameters to fit
+# this parameters may change.
+# the format to fill this parameters is due
+# to the construction of the function
+# which is amplitude, center and sigma
+
+params = [1000, 515, 20]
+params.append(500,500,40)
+params.append(100,480,60)
+
+popt, pcov = curve_fit(multi_peak_fit, x, y, p0=params)
 
 \end{lstlisting}
-
-\lstset{caption={Insert code directly in your document}}
-\begin{lstlisting}[basicstyle=\fontsize{5}{4}\selectfont\ttfamily]
-from brg.datastructures import Mesh
-mesh = Mesh.from_obj('faces.obj')
-mesh.draw()
-\end{lstlisting}
-
 
 \section{Results and discussion}
 The training process of GPT involves pre-training on large corpora and subsequent fine-tuning on specific downstream tasks. We describe the pre-training phase, which involves predicting masked tokens in a language modeling objective. We discuss the challenges and considerations in training GPT on massive datasets, as well as techniques to enhance its performance and efficiency. Furthermore, we delve into the fine-tuning process, where GPT is adapted to specific tasks through supervised learning.
