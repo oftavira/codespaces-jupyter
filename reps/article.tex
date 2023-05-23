@@ -18,7 +18,7 @@
 
 %opening
 \title{Embeded silicon crystals: Calculating properties from Raman Spectra}
-\author{Antony Lopez Sánchez, Giovanni Eboli Castro, \\ Daniel Carlos Palacios Hernandez, David Omar Flores Tavira}
+\author{}
 
 \begin{document}
 
@@ -67,7 +67,7 @@ of 633nm, Acquisition time of 10 seconds, 2 accumulations, wavenumber (in $cm^{-
 \end{figure}
 
 
-The RS are shown in Figure 3. All the signals present a baseline that is aparentally a linearly increasing emission in all the wavenumbers. We observe an increase of the slope in the RS as the measurements are made in different points along the sample. To start the analysis we pick a range of wavenumber between 350 cm$^{-1}$ and 600 cm$^{-1}$ this is because we can expect the region of interest between the si transition at 520 $cm^{-1}]$ and the region in which the transitions start to occur in the RS (400 $cm^{-1}$). Then we can substract the baseline as shown in Figure 4.
+The RS are shown in Figure 3. All the signals present a baseline that is aparentally a linearly increasing emission in all the wavenumbers. We observe an increase of the slope in the RS as the measurements are made in different points along the sample. To start the analysis we pick a range of wavenumber between 350 cm$^{-1}$ and 600 cm$^{-1}$ this is because we can expect the region of interest between the si transition at 520 $cm^{-1}]$ and the region in which the transitions start to occur in the RS (400 $cm^{-1}$). Then we can substract the baseline as shown in Figure 4, the scripts will be listed later.
 
 \begin{figure}[h]
   \centering
@@ -175,20 +175,35 @@ popt, pcov = curve_fit(multi_peak_fit, x, y, p0=params)
 \end{lstlisting}
 
 \section{Results and discussion}
-The training process of GPT involves pre-training on large corpora and subsequent fine-tuning on specific downstream tasks. We describe the pre-training phase, which involves predicting masked tokens in a language modeling objective. We discuss the challenges and considerations in training GPT on massive datasets, as well as techniques to enhance its performance and efficiency. Furthermore, we delve into the fine-tuning process, where GPT is adapted to specific tasks through supervised learning.
 
-    \begin{equation}
-    \int_{a}^{b}
-    \end{equation}
+The spectrums where correctly fitted and the analytical signal for peak detection and FWHM estimation where obtained as the image shows.
 
-\section{Applications of GPT}
-GPT has demonstrated remarkable versatility across a wide array of NLP applications. We provide an overview of the various tasks where GPT has excelled, such as language translation, text summarization, question answering, and sentiment analysis. For each task, we discuss the methodologies employed and the corresponding performance of GPT. We also examine the ethical implications and potential biases that arise when using GPT in real-world applications.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\columnwidth, height=4cm]{Screenshot_2023-05-23_09-32-39.png}
+  \captionof{figure}{Raman Spectrum before and after doing the base line correction, in the software we fit a polinomial of degree 3 but it can be changed.} % Add captn 2 the f
+\end{figure}
 
-\section{Strengths and Limitations}
-While GPT has achieved impressive results, it also exhibits certain limitations. We analyze the strengths and weaknesses of GPT in different contexts, including long-range dependency modeling, handling rare or out-of-distribution words, and dealing with biased or harmful content. We highlight the challenges that researchers and practitioners face when working with GPT and propose potential avenues for improvement.
 
-\section{Conclusion}
-In this paper, we have presented a comprehensive analysis of GPT, examining its architecture, training process, and applications. GPT has significantly advanced the field of NLP, demonstrating its capabilities in generating coherent and contextually appropriate text. However, challenges remain in mitigating biases, improving long-range dependency modeling, and addressing ethical concerns. As the field progresses, further research and innovation will pave the way for the continued advancement and responsible use of GPT in diverse real-world applications.
+The sigma and centers of the peak also where calculated
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\columnwidth, height=4cm]{position.png}
+  \captionof{figure}{Raman Spectrum before and after doing the base line correction, in the software we fit a polinomial of degree 3 but it can be changed.} % Add captn 2 the f
+\end{figure}
+
+
+The spectrums where correctly fitted and the analytical signal for peak detection and FWHM estimation where obtained as the image shows.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\columnwidth, height=4cm]{sigma.png}
+  \captionof{figure}{Raman Spectrum before and after doing the base line correction, in the software we fit a polinomial of degree 3 but it can be changed.} % Add captn 2 the f
+\end{figure}
+
+
+
 \section{References}
 \small{
 [1]\textsc{Narasimha Rao Mavilla,  Chetan Singh Solanki ,  Juzer Vasi} \\
